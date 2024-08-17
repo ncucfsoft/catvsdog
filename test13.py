@@ -21,7 +21,7 @@ model_dir = 'd:/python/validation/model/'     # 网络参数保存位置
 workers = 10                        # 线程数量
 batch_size = 25                     # 一次训练所选取的样本数
 lr = 0.001                         # 学习率
-nepoch = 20                         # 训练的次数
+nepoch = 1                         # 训练的次数
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 #tran = Trans.Compose([Trans.Resize(img_size), Trans.CenterCrop([img_size, img_size]), Trans.ToTensor()]) #封装， 对后面读取的图片的格式转换
 
@@ -49,10 +49,19 @@ def train():
            
                 img=img.to(device)
                 label=label.to(device)
+                #print (str(label))
                 out = model(img)  # 前向传播，计算输出
-                loss = Lossfuc(out, label.squeeze()).to(device)  # 计算损失
+                #print ('model后:'+str(len(label)))
+                #label=label.to(torch.float)
+                newlabel=label
+                loss=0
+                if(len(label)>1):#batch_size必须设置大于1
+                 newlabel=label.squeeze()
+                 #print ('newlabel后:'+str(newlabel))
+                 loss = Lossfuc(out,newlabel).to(device)  # 计算损失
 
-                loss.backward()  # 反向传播，计算梯度
+                 loss.backward()  # 反向传播，计算梯度
+
                 optimizer.step()  # 更新网络参数
                 optimizer.zero_grad()  # 梯度清零
                 cnt += 1

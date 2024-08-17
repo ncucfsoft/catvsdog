@@ -15,7 +15,7 @@ from torch.autograd import Variable
 import torch.nn as nn
 
 img_size = 200 #设置图片尺寸
-#os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"  # 防止打印图片出错
+bCopyerrorimg=False
 
 model_file = 'd:/python/validation/model/model.pth'  # 模型文件路径
 dataset_dir = 'd:/python/validation/'  # 数据集路径
@@ -69,20 +69,21 @@ def val():
                 # print('labelsize------:%d curcorrect:%d predictsize:%d'%(label.size(0),curcorrect,predicted.size(0)))
                 
                 correct += curcorrect
-                for i in range(predicted.size(0)):
-                   # print('labeli:%d filenamei %d'%(int(label[i]),int(filename[i])))
-                    if(predicted[i]!=label[i]):
-                     if(int(filename[i])<100000):
-                        caterror=dataset_dir+"error/cat/"+str(int(filename[i]))+".jpg"
-                        catorgfpath=dataset_dir+"train/cat/"+str(int(filename[i]))+".jpg"
-                        #print (caterror)
-                        shutil.copyfile(catorgfpath,caterror)
-                     else:
-                        caterror=dataset_dir+"error/dog/"+str(int(filename[i])-100000)+".jpg"
-                        catorgfpath=dataset_dir+"train/dog/"+str(int(filename[i])-100000)+".jpg"
-                        #print (caterror)
-                        shutil.copyfile(catorgfpath,caterror)
-                     print('not equal------------------'+str(int(filename[i])))
+                if (bCopyerrorimg):
+                    for i in range(predicted.size(0)):
+                    # print('labeli:%d filenamei %d'%(int(label[i]),int(filename[i])))
+                         if(predicted[i]!=label[i]):
+                          if(int(filename[i])<100000):
+                              caterror=dataset_dir+"error/cat/"+str(int(filename[i]))+".jpg"
+                              catorgfpath=dataset_dir+"train/cat/"+str(int(filename[i]))+".jpg"
+                              #print (caterror)
+                              shutil.copyfile(catorgfpath,caterror)
+                          else:
+                              caterror=dataset_dir+"error/dog/"+str(int(filename[i])-100000)+".jpg"
+                              catorgfpath=dataset_dir+"train/dog/"+str(int(filename[i])-100000)+".jpg"
+                              #print (caterror)
+                              shutil.copyfile(catorgfpath,caterror)
+                          print('not equal------------------'+str(int(filename[i])))
     #except:
     # print('fail img inload-----')   
     print('正确率: %d %% %d %d '% (100*correct/total,correct,total))
